@@ -11,11 +11,12 @@ import (
 )
 
 type UserCredentials struct {
-  // FieldA int    `json:"field_a"
   // http://stackoverflow.com/questions/11693865/lower-case-key-names-with-json-marshal-in-go
   // that's pretty wacky
-  Name string       `json:"name"`
-  Password string   `json:"password"`
+  // also
+  // use pointers to distinguish missing values from merely nul-like ones
+  Name *string       `json:"name"`
+  Password *string   `json:"password"`
 }
 
 func init() {
@@ -43,7 +44,7 @@ func rootHandler(writer http.ResponseWriter, request *http.Request) {
     fmt.Fprint(writer, `{ "error": "you are not currently logged in"}`)
     return
   }
-  fmt.Fprint(writer, `{ "username": "` + user_credentials.Name + `"}`)
+  fmt.Fprint(writer, `{ "username": "` + *user_credentials.Name + `"}`)
 }
 
 func loginHandler(writer http.ResponseWriter, request *http.Request) {
@@ -63,6 +64,7 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
     return
   }
   if len(found_users) == 0 {
+    // doesn't work properly
     fmt.Fprint(writer, `{ "error": "this username/password pair does not match an existing user"}`)
   }
   if len(found_users) == 1 {
@@ -70,7 +72,9 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
     http.SetCookie(writer, &cookie)
     fmt.Fprint(writer, `{ "status": "okay"}`)
   }
-  // if len(found_users) > 1 // can't happen
+  if len(found_users) > 1 {
+    // can't happen
+  }
 }
 
 func logoutHandler(writer http.ResponseWriter, request *http.Request) {
@@ -107,6 +111,8 @@ func signupHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func readUserCredentialsBody(writer http.ResponseWriter, request *http.Request) (*UserCredentials, error) {
+  // this doesn't work
+  // TODO: investigate that
   if nil == request.Body {
     fmt.Fprint(writer, `{ "error": "must be POST request"}`)
     return nil, errors.New("must be a POST request")
@@ -118,6 +124,12 @@ func readUserCredentialsBody(writer http.ResponseWriter, request *http.Request) 
   }
   var user UserCredentials
   err = json.Unmarshal(body, &user)
+  context := appengine.NewContext(request)
+  context.Debugf("incomplete user ", user)
+  if nil != err || nil == user.Name || nil == user.Password {
+    fmt.Fprint(writer, `{ "error": "keys username: string and password: string must be set"}`)
+    return nil, errors.New("keys username: string and password: string must be set")
+  }
   if nil != err {
     fmt.Fprint(writer, `{ "error": "keys username: string and password: string must be set"}`)
     return nil, errors.New("keys username: string and password: string must be set")

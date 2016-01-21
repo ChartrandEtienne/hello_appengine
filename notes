@@ -4,8 +4,6 @@ Maybe a big test:
 
 call /, check that you have a "plz auth" error
   { "error": "you are not currently logged in"}
-call /logout, check that you have a "plz auth" error
-  { "error": "you are not currently logged in"}
 call /signup, 
   { "username": string
   , "password": string }
