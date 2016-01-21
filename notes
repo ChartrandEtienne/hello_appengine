@@ -1,8 +1,8 @@
 TODO
 
-Maybe a big test: 
+Maybe a big test suite: 
 
-call /, check that you have a "plz auth" error
+call /, check that you have a "please auth" error
   { "error": "you are not currently logged in"}
 call /signup, 
   { "username": string
@@ -24,9 +24,9 @@ call /, check info is valid
 call /logout
   // dubious but eh
   { "status": "okay" }
-call /, check that you have a "plz auth" error
+call /, check that you have a "please auth" error
   { "error": "you are not currently logged in"}
-call /logout, check that you have a "plz auth" error
+call /logout, check that you have a "please auth" error
   { "error": "you are not currently logged in"}
 
 goapp serve

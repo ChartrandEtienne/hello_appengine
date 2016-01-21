@@ -18,19 +18,19 @@ curl http://localhost:8080/
 echo "\n\ntesting /signup\n"
 echo "should return status okay\n\n"
 
-curl -H "Content-Type: application/json" -X POST -d '{"name":"Doob","password":"billionsofstars"}' http://localhost:8080/signup
+curl -H "Content-Type: application/json" -X POST -d '{"name":"DeGrasse","password":"billionsofstars"}' http://localhost:8080/signup
 
 sleep 1
 
 echo "\n\nshould return error about existing user\n\n"
 
-curl -H "Content-Type: application/json" -X POST -d '{"name":"Doob","password":"billionsofstars"}' http://localhost:8080/signup
+curl -H "Content-Type: application/json" -X POST -d '{"name":"DeGrasse","password":"billionsofstars"}' http://localhost:8080/signup
 
 echo "\n\ntesting login\n"
 
 echo "should return status okay\n\n"
 
-curl --cookie-jar cookie_file -H "Content-Type: application/json" -X POST -d '{"name":"Doob","password":"billionsofstars"}' http://localhost:8080/login
+curl --cookie-jar cookie_file -H "Content-Type: application/json" -X POST -d '{"name":"DeGrasse","password":"billionsofstars"}' http://localhost:8080/login
 
 
 sleep 1
