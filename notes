@@ -1,0 +1,34 @@
+TODO
+
+Maybe a big test: 
+
+call /, check that you have a "plz auth" error
+  { "error": "you are not currently logged in"}
+call /logout, check that you have a "plz auth" error
+  { "error": "you are not currently logged in"}
+call /signup, 
+  { "username": string
+  , "password": string }
+  with a GET
+  { "error": "must be POST request"}
+  with data format error
+  { "error": "keys username: string and password: string must be set"}
+  with an existing user
+  { "error": "username [username] already exists"}
+  { "status": "okay"}
+call /login
+  with data format error
+  { "error": "keys username: string and password: string must be set"}
+  with incorrect data
+  { "error": "this username/password pair does not match an existing user"}
+call /, check info is valid
+  { "username": "[username]" }
+call /logout
+  // dubious but eh
+  { "status": "okay" }
+call /, check that you have a "plz auth" error
+  { "error": "you are not currently logged in"}
+call /logout, check that you have a "plz auth" error
+  { "error": "you are not currently logged in"}
+
+
