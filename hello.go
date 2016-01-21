@@ -8,6 +8,7 @@ import (
   "io/ioutil"
   "encoding/json"
   "errors"
+  "crypto/md5"
 )
 
 type UserCredentials struct {
@@ -53,10 +54,11 @@ func loginHandler(writer http.ResponseWriter, request *http.Request) {
   if err != nil {
     return
   }
+  user.Password = hashString(user.Password)
   query := datastore.NewQuery("UserCredentials").
     Filter("Name=", user.Name).
+    Filter("Password=", user.Password).
     Ancestor(userKey(context))
-    // Filter("Password=", user.Password)
   var found_users []UserCredentials
   keys, err := query.GetAll(context, &found_users)
   if err != nil {
@@ -101,6 +103,7 @@ func signupHandler(writer http.ResponseWriter, request *http.Request) {
     return
   }
   key := datastore.NewIncompleteKey(context, "UserCredentials", userKey(context))
+  user.Password = hashString(user.Password)
   key, err = datastore.Put(context, key, user)
   if err != nil {
     fmt.Fprint(writer, `{ "error": Put returned err for reason" } `, err)
@@ -174,4 +177,11 @@ func clearDatabaseHandler(writer http.ResponseWriter, request *http.Request) {
     context.Debugf("deleting ", user, "\n")
     err = datastore.Delete(context, key)
   }
+}
+
+func hashString(to_hash string) string {
+  h := md5.New()
+  // eh := h.Sum([]byte(to_hash))
+  // fmt.Printf("%x\n", string(h.Sum([]byte("clah"))))
+  return fmt.Sprintf("%x", string(h.Sum([]byte(to_hash))))
 }
