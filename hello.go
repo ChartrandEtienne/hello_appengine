@@ -15,8 +15,8 @@ type UserCredentials struct {
   // that's pretty wacky
   // also
   // use pointers to distinguish missing values from merely nul-like ones
-  Name *string       `json:"name"`
-  Password *string   `json:"password"`
+  Name string       `json:"name"`
+  Password string   `json:"password"`
 }
 
 func init() {
@@ -44,7 +44,7 @@ func rootHandler(writer http.ResponseWriter, request *http.Request) {
     fmt.Fprint(writer, `{ "error": "you are not currently logged in"}`)
     return
   }
-  fmt.Fprint(writer, `{ "username": "` + *user_credentials.Name + `"}`)
+  fmt.Fprint(writer, `{ "username": "` + user_credentials.Name + `"}`)
 }
 
 func loginHandler(writer http.ResponseWriter, request *http.Request) {
@@ -91,14 +91,13 @@ func signupHandler(writer http.ResponseWriter, request *http.Request) {
   }
   query := datastore.NewQuery("UserCredentials").
     Filter("Name=", user.Name)
-    // Filter("Password=", user.Password)
   var found_users []UserCredentials
   if _, err = query.GetAll(context, &found_users); err != nil {
-    // Handle error.
-    return
+    // Handle error
+    // return
   }
   if len(found_users) > 0 {
-    fmt.Fprint(writer, `{ "error": "username [username] already exists"}`)
+    fmt.Fprint(writer, `{ "error": "username ` + user.Name + ` already exists"}`)
     return
   }
   key := datastore.NewIncompleteKey(context, "UserCredentials", userKey(context))
@@ -126,11 +125,7 @@ func readUserCredentialsBody(writer http.ResponseWriter, request *http.Request) 
   err = json.Unmarshal(body, &user)
   context := appengine.NewContext(request)
   context.Debugf("incomplete user ", user)
-  if nil != err || nil == user.Name || nil == user.Password {
-    fmt.Fprint(writer, `{ "error": "keys username: string and password: string must be set"}`)
-    return nil, errors.New("keys username: string and password: string must be set")
-  }
-  if nil != err {
+  if nil != err || "" == user.Name || "" == user.Password {
     fmt.Fprint(writer, `{ "error": "keys username: string and password: string must be set"}`)
     return nil, errors.New("keys username: string and password: string must be set")
   }
