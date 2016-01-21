@@ -31,4 +31,6 @@ call /, check that you have a "plz auth" error
 call /logout, check that you have a "plz auth" error
   { "error": "you are not currently logged in"}
 
+goapp serve
+./test_script.sh
 
